@@ -7,15 +7,13 @@ public class PatrolState : MonoBehaviour
     private int currentWaypointIndex = 0; // Index of the current waypoint
     private NavMeshAgent agent; // Reference to the NavMeshAgent component
 
-    private bool isWaiting = false; // Flag to indicate if the enemy is currently waiting
+    [HideInInspector]
+    public bool isWaiting = false; // Flag to indicate if the enemy is currently waiting
     private float waitDuration = 3f; // Duration of wait time in seconds
-
-    private Animator animator; // Reference to the Animator component
 
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>(); // Get the NavMeshAgent component
-        animator = GetComponent<Animator>(); // Get the Animator component
 
         // Start patrolling from the first waypoint
         MoveToWaypoint(currentWaypointIndex);
@@ -29,12 +27,6 @@ public class PatrolState : MonoBehaviour
             // Start waiting
             isWaiting = true;
             Invoke(nameof(ContinuePatrol), waitDuration); // Wait for the specified duration before continuing patrol
-            PlayIdleAnimation(); // Play idle animation while waiting
-        }
-        else
-        {
-            // Play running animation while moving to the next waypoint
-            PlayRunningAnimation();
         }
     }
 
@@ -57,23 +49,5 @@ public class PatrolState : MonoBehaviour
     {
         // Set the destination to the position of the current waypoint
         agent.SetDestination(waypoints[index].position);
-    }
-
-    private void PlayRunningAnimation()
-    {
-        // Set the "IsIdle" parameter to false to play the running animation
-        if (animator != null)
-        {
-            animator.SetBool("IsIdle", false);
-        }
-    }
-
-    private void PlayIdleAnimation()
-    {
-        // Set the "IsIdle" parameter to true to play the idle animation
-        if (animator != null)
-        {
-            animator.SetBool("IsIdle", true);
-        }
     }
 }
