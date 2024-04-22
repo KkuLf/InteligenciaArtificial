@@ -24,7 +24,7 @@ public class PatrolState : MonoBehaviour
     private void Update()
     {
         // Check if the agent has reached the current waypoint
-        if (!isWaiting && agent.remainingDistance < agent.stoppingDistance)
+        if (!isWaiting && agent.remainingDistance <= agent.stoppingDistance)
         {
             // Start waiting
             isWaiting = true;
