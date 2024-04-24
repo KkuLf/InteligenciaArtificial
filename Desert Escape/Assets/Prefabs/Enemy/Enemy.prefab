@@ -75,6 +75,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100060, guid: fcb334eb247ae3e488abb081c847cf09,
         type: 3}
       insertIndex: -1
+      addedObject: {fileID: 3498377302998663510}
+    - targetCorrespondingSourceObject: {fileID: 100060, guid: fcb334eb247ae3e488abb081c847cf09,
+        type: 3}
+      insertIndex: -1
       addedObject: {fileID: 6123472898852954504}
     - targetCorrespondingSourceObject: {fileID: 100060, guid: fcb334eb247ae3e488abb081c847cf09,
         type: 3}
@@ -103,6 +107,20 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5508127201484734827}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3498377302998663510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5508127201484834743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11d91acfca86fdd47b271a29bc904f74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sightRange: 5
+  coneAngle: 40
 --- !u!114 &6123472898852954504
 MonoBehaviour:
   m_ObjectHideFlags: 0
