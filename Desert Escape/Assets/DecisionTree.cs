@@ -6,10 +6,12 @@ public class DecisionTree : MonoBehaviour
     public float coneAngle = 45f; // Angle of enemy's cone of vision
 
     private Transform player; // Reference to the player's transform
+    private StateMachine stateMachine; // Reference to the state machine
 
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform; // Find the player
+        stateMachine = GetComponent<StateMachine>(); // Get the state machine component
     }
 
     private void Update()
@@ -18,7 +20,8 @@ public class DecisionTree : MonoBehaviour
         if (IsPlayerInSight())
         {
             Debug.Log("Player in sight!");
-            // Perform actions when player is spotted
+            // Transition to shoot state
+            stateMachine.SetState(StateMachine.EnemyState.Shoot);
         }
     }
 
@@ -39,8 +42,10 @@ public class DecisionTree : MonoBehaviour
                 {
                     if (hit.collider.CompareTag("Player"))
                     {
-                        // LEFE ACA TENES QUE PONER QUE SE PASE AL STATE MACHINE DE SHOOTSTATE
-                        // Y SOLO QUE APUNTE AL JUGADOR Y SE ESUCHE UN TIRO
+                        // Transition to shoot state
+                       
+                        stateMachine.SetState(StateMachine.EnemyState.Shoot);
+                        Debug.Log("shoot");
                         return true; // Player is in sight
                     }
                 }
@@ -59,3 +64,4 @@ public class DecisionTree : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + transform.forward * sightRange);
     }
 }
+
