@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Movement speed
-    public float runSpeedMultiplier = 2f; // Speed multiplier when running
+    public float moveSpeed = 2f; // Movement speed
+    public float runSpeedMultiplier = 1.2f; // Speed multiplier when running
     public float crouchHeight = 0.5f; // Height when crouching
 
     public Animator animator; // Reference to the Animator component
@@ -20,10 +20,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Movement
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
-        Vector3 moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
+        // Check if any movement keys are pressed
+        bool isMoving = (Input.GetAxis("Horizontal") != 0f || Input.GetAxis("Vertical") != 0f);
+        animator.SetBool("IsMoving", isMoving); // Set animator bool for moving
 
         // Running
         float currentMoveSpeed = moveSpeed;
@@ -53,7 +52,8 @@ public class PlayerController : MonoBehaviour
         cameraTransform.Rotate(Vector3.left * mouseY); // Rotate camera vertically
 
         // Apply movement
-        characterController.Move(transform.TransformDirection(moveDirection) * currentMoveSpeed * Time.deltaTime);
+        Vector3 moveDirection = transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal");
+        characterController.Move(moveDirection.normalized * currentMoveSpeed * Time.deltaTime);
 
         // Set walking animation
         animator.SetFloat("Speed", moveDirection.magnitude);
