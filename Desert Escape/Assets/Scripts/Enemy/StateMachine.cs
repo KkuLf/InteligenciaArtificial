@@ -10,12 +10,17 @@ public class StateMachine : MonoBehaviour
         Shoot
     }
 
+    public AudioClip shootSound; // Assign the audio clip for shooting in the inspector
+
     private EnemyState currentState;
     private float idleTimer;
     private float idleDuration = 6f; // Duration of idle state
+    private bool playerInLineOfSight = false;
+    private bool hasPlayedShootSound = false; // Track if shoot sound has been played
 
     private void Start()
     {
+        // Set the initial state to Patrol
         SetState(EnemyState.Patrol);
     }
 
@@ -26,6 +31,10 @@ public class StateMachine : MonoBehaviour
             case EnemyState.Patrol:
                 // You only need to transition to the Shoot state if the player is in sight.
                 // No need to check for Idle state here.
+                if (playerInLineOfSight)
+                {
+                    SetState(EnemyState.Shoot);
+                }
                 break;
 
             case EnemyState.Idle:
@@ -38,7 +47,11 @@ public class StateMachine : MonoBehaviour
                 break;
 
             case EnemyState.Shoot:
-                // Implement logic for shooting state
+                if (!hasPlayedShootSound)
+                {
+                    PlayShootSound();
+                    hasPlayedShootSound = true; // Set to true to indicate the sound has been played
+                }
                 break;
         }
     }
@@ -64,4 +77,38 @@ public class StateMachine : MonoBehaviour
                 break;
         }
     }
+
+    private void PlayShootSound()
+    {
+        // Play the shoot sound at the position of the enemy
+        AudioSource.PlayClipAtPoint(shootSound, transform.position);
+    }
+
+    // Example function to check if player is in line of sight, replace with your own logic
+    private void OnTriggerStay(Collider other)
+    {
+        // Replace this with your actual line of sight checking logic
+        if (other.CompareTag("Player"))
+        {
+            playerInLineOfSight = true;
+            if (currentState != EnemyState.Shoot)
+            {
+                SetState(EnemyState.Shoot);
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInLineOfSight = false;
+            hasPlayedShootSound = false; // Reset so that sound can be played again if the player re-enters
+            if (currentState == EnemyState.Shoot)
+            {
+                SetState(EnemyState.Patrol);
+            }
+        }
+    }
 }
+
