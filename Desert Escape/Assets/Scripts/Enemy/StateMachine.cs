@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class StateMachine : MonoBehaviour
 {
-    public int x = 1;
     public enum EnemyState
     {
         Patrol,
@@ -25,16 +24,8 @@ public class StateMachine : MonoBehaviour
         switch (currentState)
         {
             case EnemyState.Patrol:
-                // Check for transition to idle state
-                if ( x >=1 )
-                {
-                    SetState(EnemyState.Idle);
-                }
-                // Check for transition to shoot state
-                else if (x >= 1)
-                {
-                    SetState(EnemyState.Shoot);
-                }
+                // You only need to transition to the Shoot state if the player is in sight.
+                // No need to check for Idle state here.
                 break;
 
             case EnemyState.Idle:
@@ -62,18 +53,15 @@ public class StateMachine : MonoBehaviour
                 GetComponent<PatrolState>().enabled = true;
                 break;
 
-            //case EnemyState.Idle:
-            //    // Deactivate other state scripts and start idle timer
-            //    GetComponent<PatrolState>().enabled = false;
-            //    idleTimer = 0f;
-            //    GetComponent<IdleState>().enabled = true;
-            //    break;
+            case EnemyState.Idle:
+                // Deactivate PatrolState script when transitioning to Idle
+                GetComponent<PatrolState>().enabled = false;
+                idleTimer = 0f; // Reset idle timer
+                break;
 
-                //case EnemyState.Shoot:
-                //    // Deactivate other state scripts and start shooting
-                //    GetComponent<IdleState>().enabled = false;
-                //    GetComponent<ShootState>().enabled = true;
-                //    break;
+            case EnemyState.Shoot:
+                Debug.Log("statemachineshoot");
+                break;
         }
     }
 }

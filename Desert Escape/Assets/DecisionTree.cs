@@ -42,11 +42,8 @@ public class DecisionTree : MonoBehaviour
                 {
                     if (hit.collider.CompareTag("Player"))
                     {
-                        // Transition to shoot state
-                       
-                        stateMachine.SetState(StateMachine.EnemyState.Shoot);
-                        Debug.Log("shoot");
-                        return true; // Player is in sight
+                        // Player is in sight, transition to shoot state
+                        return true;
                     }
                 }
             }
@@ -64,4 +61,3 @@ public class DecisionTree : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + transform.forward * sightRange);
     }
 }
-
