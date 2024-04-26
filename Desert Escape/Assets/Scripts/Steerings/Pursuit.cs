@@ -1,23 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
+// Pursuit.cs
 using UnityEngine;
 
 public class Pursuit : ISteering
 {
-    Transform _entity;
-    Rigidbody _target;
-    float _timePrediction;
+    private Transform entity;
+    private Rigidbody target;
+    private float timePrediction;
+
     public Pursuit(Transform entity, Rigidbody target, float timePrediction)
     {
-        _entity = entity;
-        _target = target;
-        _timePrediction = timePrediction;
+        this.entity = entity;
+        this.target = target;
+        this.timePrediction = timePrediction;
     }
+
     public Vector3 GetDir()
     {
-        Vector3 point = _target.position + _target.transform.forward * _target.velocity.magnitude * _timePrediction;
-        Vector3 dirToPoint = (point - _entity.position).normalized;
-        Vector3 dirToTarget = (_target.position - _entity.position).normalized;
+        Vector3 point = target.position + target.transform.forward * target.velocity.magnitude * timePrediction;
+        Vector3 dirToPoint = (point - entity.position).normalized;
+        Vector3 dirToTarget = (target.position - entity.position).normalized;
 
         if (Vector3.Dot(dirToPoint, dirToTarget) < 0)
         {
@@ -26,5 +27,4 @@ public class Pursuit : ISteering
 
         return dirToPoint;
     }
-
 }

@@ -1,29 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
+// Seek.cs
 using UnityEngine;
 
 public class Seek : ISteering
 {
-
-    Transform _entity;
-    Transform _target;
+    private Transform entity;
+    private Transform target;
 
     public Seek(Transform entity, Transform target)
     {
-        _entity = entity;
-        _target = target;
+        this.entity = entity;
+        this.target = target;
     }
 
     public Vector3 GetDir()
     {
-        //b: target
-        //a: entity
-
-        Vector3 dir = (_target.position - _entity.position).normalized;
-        return dir;
-
+        return (target.position - entity.position).normalized;
     }
-
-
-
 }
