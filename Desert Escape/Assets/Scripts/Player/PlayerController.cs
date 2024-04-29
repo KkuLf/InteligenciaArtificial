@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class PlayerController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         cameraTransform = Camera.main.transform; // Assuming the main camera is the player's camera
 
+        // Ensure cursor is locked and invisible
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -61,4 +63,12 @@ public class PlayerController : MonoBehaviour
         // Set walking animation
         animator.SetFloat("Speed", moveDirection.magnitude);
     }
+
+    // Call this method when changing to "win" or "GameOver" scene
+    public void ActivateCursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
 }
+
