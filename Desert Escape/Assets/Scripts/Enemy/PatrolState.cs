@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
+using System.Linq;
 
 public class PatrolState : MonoBehaviour
 {
@@ -16,7 +18,7 @@ public class PatrolState : MonoBehaviour
         agent = GetComponent<NavMeshAgent>(); // Get the NavMeshAgent component
 
         // Start patrolling from the first waypoint
-        MoveToWaypoint(currentWaypointIndex);
+        MoveToNextWaypoint();
     }
 
     private void Update()
@@ -32,22 +34,58 @@ public class PatrolState : MonoBehaviour
 
     private void ContinuePatrol()
     {
-        isWaiting = false; // End the waiting period
-
-        // Move to the next waypoint
+        isWaiting = false;
         currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
-        MoveToWaypoint(currentWaypointIndex);
-
-        // Reverse patrol path if the last waypoint is reached
+        MoveToNextWaypoint();
         if (currentWaypointIndex == 0)
         {
             System.Array.Reverse(waypoints);
         }
     }
 
-    private void MoveToWaypoint(int index)
+    private void MoveToNextWaypoint()
     {
-        // Set the destination to the position of the current waypoint
-        agent.SetDestination(waypoints[index].position);
+        List <float> probabilities = CalculateProbabilities();
+        int selectedIndex = RouletteWheelSelection(probabilities);
+        agent.SetDestination(waypoints[selectedIndex].position);
+    }
+    private List<float> CalculateProbabilities()
+    {
+        List<float> distances = new List<float>();
+
+        // Calculates distances from the agent to each waypoint
+        foreach (Transform waypoint in waypoints)
+        {
+            float distance = Vector3.Distance(transform.position, waypoint.position);
+            distances.Add(distance);
+        }
+        List<float> probabilities = new List<float>();
+        float totalDistance = distances.Sum();
+
+        foreach (float distance in distances)
+        {
+            float probability = 1f - (distance / totalDistance);
+            probabilities.Add(probability);
+        }
+        return probabilities;
+    }
+    private int RouletteWheelSelection(List<float> probabilities)
+    {
+        float randomValue = Random.value;  // Generate a random number between 0 and 1
+
+        //  Make selection based on probabilities
+        float cumulativeProbability = 0;
+        for (int i = 0; i < probabilities.Count; i++)
+        {
+            cumulativeProbability += probabilities[i];
+            if (randomValue <= cumulativeProbability)
+            {
+                return i;
+            }
+        }
+
+        // If not select any waypoint 
+        Debug.LogError("No se pudo seleccionar un waypoint.");
+        return -1;
     }
 }
