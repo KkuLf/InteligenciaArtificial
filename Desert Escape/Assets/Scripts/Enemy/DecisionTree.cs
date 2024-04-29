@@ -1,29 +1,29 @@
-// DecisionTree.cs
 using UnityEngine;
 
 public class DecisionTree : MonoBehaviour
 {
-    public float sightRange = 10f;
-    public float coneAngle = 45f;
-    private Transform player;
-    private StateMachine stateMachine; // Add a reference to the StateMachine
+    public float sightRange = 10f;                  // Distance to which the enemy
+    public float coneAngle = 45f;                   // Angle of vision
+    private Transform player;                       // Player's transform
+    private StateMachine stateMachine;              // Add a reference to the StateMachine
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        stateMachine = GetComponent<StateMachine>(); // Get reference to StateMachine
+        player = GameObject.FindGameObjectWithTag("Player").transform;  
+        stateMachine = GetComponent<StateMachine>();    // Get reference to StateMachine
     }
 
     private void Update()
     {
-        if (IsPlayerInSight())
+        if (IsPlayerInSight())      // We check if the player is spotted
         {
             Debug.Log("Player in sight!");
-            stateMachine.SetState(StateMachine.EnemyState.Shoot); // Transition to Shoot state
+            stateMachine.SetState(StateMachine.EnemyState.Shoot); 
+            // DT processes it and calls the State machine to transition to to Shoot state and execute it
         }
     }
 
-    public bool IsPlayerInSight()
+    public bool IsPlayerInSight()       // LOS checking 
     {
         Vector3 directionToPlayer = player.position - transform.position;
 
@@ -45,7 +45,7 @@ public class DecisionTree : MonoBehaviour
         return false;
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected()     // Gizmos to visualize LOS in the editor and adjust accordingly :)
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawRay(transform.position, Quaternion.Euler(0, coneAngle / 2, 0) * transform.forward * sightRange);

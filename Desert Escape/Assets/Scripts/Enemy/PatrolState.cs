@@ -5,20 +5,18 @@ using System.Linq;
 
 public class PatrolState : MonoBehaviour
 {
-    public Transform[] waypoints; // Array to hold the patrol waypoints
-    private int currentWaypointIndex = 0; // Index of the current waypoint
-    private NavMeshAgent agent; // Reference to the NavMeshAgent component
+    public Transform[] waypoints;                   // Array to hold the patrol waypoints
+    private int currentWaypointIndex = 0;           // Index of the current waypoint
+    private NavMeshAgent agent;                     // Reference to the NavMeshAgent component
 
     [HideInInspector]
-    public bool isWaiting = false; // Flag to indicate if the enemy is currently waiting
-    private float waitDuration = 3f; // Duration of wait time in seconds
+    public bool isWaiting = false;                  // Flag to indicate if the enemy is currently waiting
+    private float waitDuration = 3f;                // Duration of wait time in seconds
 
     private void Start()
     {
-        agent = GetComponent<NavMeshAgent>(); // Get the NavMeshAgent component
-
-        // Start patrolling from the first waypoint
-        MoveToWaypoint(currentWaypointIndex);
+        agent = GetComponent<NavMeshAgent>();       // Get the NavMeshAgent component
+        MoveToWaypoint(currentWaypointIndex);       // Start patrolling from the first waypoint
     }
 
     private void Update()
@@ -28,13 +26,13 @@ public class PatrolState : MonoBehaviour
         {
             // Start waiting
             isWaiting = true;
-            Invoke(nameof(ContinuePatrol), waitDuration); // Wait for the specified duration before continuing patrol
+            Invoke(nameof(ContinuePatrol), waitDuration);   // Wait for the specified duration before continuing patrol
         }
     }
 private void MoveToWaypoint(int index)
     {
-        // Set the destination to the position of the current waypoint
-        agent.SetDestination(waypoints[index].position);
+        
+        agent.SetDestination(waypoints[index].position);    // Set the destination to the position of the current waypoint
     }
 
     private void ContinuePatrol()
@@ -45,7 +43,7 @@ private void MoveToWaypoint(int index)
         currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
         MoveToWaypoint(currentWaypointIndex);
 
-        // Reverse patrol path if the last waypoint is reached
+        // Roulette to go to a random waypoint inside the array
         if (currentWaypointIndex == 0)
         {
             CalculateProbabilities();
@@ -81,7 +79,7 @@ private void MoveToWaypoint(int index)
     }
     private int RouletteWheelSelection(List<float> probabilities)
     {
-        float randomValue = Random.value;  // Generate a random number between 0 and 1
+        float randomValue = Random.value;  // Generate a random number between 0 and i
 
         //  Make selection based on probabilities
         float cumulativeProbability = 0;
@@ -94,8 +92,8 @@ private void MoveToWaypoint(int index)
             }
         }
 
-        // If not select any waypoint 
-        Debug.LogError("No se pudo seleccionar un waypoint.");
+        // If no waypoint can be selected 
+        Debug.LogError("No waypoints availiable");
         return -1;
     }
 

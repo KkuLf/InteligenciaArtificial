@@ -3,7 +3,6 @@ using UnityEngine.AI;
 
 public class StateMachine : MonoBehaviour
 {
-    public int x = 1;
     private DecisionTree decisionTree;
     private float speed = 1.5f;
 
@@ -29,32 +28,32 @@ public class StateMachine : MonoBehaviour
     {
         switch (currentState)
         {
-            case EnemyState.Patrol:
-                if (decisionTree.IsPlayerInSight()) 
+            case EnemyState.Patrol:                         // Patrol State from when moving between waypoints
+                if (decisionTree.IsPlayerInSight())         // If the player is spotted
                 {
-                    SetState(EnemyState.Shoot);
+                    SetState(EnemyState.Shoot);             // We transition to the shoot state
                 }
                 break;
-            case EnemyState.Idle:
+            case EnemyState.Idle:                           // Idle state from waiting at waypoints before patroling to the next
                 idleTimer += Time.deltaTime;
-                if (idleTimer >= idleDuration)
+                if (idleTimer >= idleDuration)              // We set a timer for the wait duration
                 {
-                    SetState(EnemyState.Patrol);
+                    SetState(EnemyState.Patrol);            // And we go back into the patrol
                 }
                 break;
-            case EnemyState.Shoot:
+            case EnemyState.Shoot:                          // Shoot state for when the player has been spotted
+
                 // Disable other state scripts
                 GetComponent<PatrolState>().enabled = false;
 
                 // Apply the pursuit behavior to follow the player
                 Vector3 pursueDir = new Pursuit(transform, player.GetComponent<Rigidbody>(), 1f).GetDir();
+
                 // Apply the direction to the enemy's movement
-                // For now, let's just log the direction
                 Debug.Log("Pursuit Direction: " + pursueDir);
 
-                // Move the enemy in the direction of pursueDir (you need to implement this part)
-                // For example, you can use a NavMeshAgent to move the enemy towards the player
-                GetComponent <NavMeshAgent>().destination = transform.position + pursueDir * speed;
+                // We use a NavMeshAgent to move the enemy towards the player in the direction of pursueDir
+                GetComponent<NavMeshAgent>().destination = transform.position + pursueDir * speed;
                 break;
 
 

@@ -14,7 +14,7 @@ public class IdleState : MonoBehaviour
 
     private void Update()
     {
-        // Check if the enemy is idle
+        // Check if the enemy is idle already
         if (patrolState != null && patrolState.isWaiting)
         {
             PlayIdleAnimation();
