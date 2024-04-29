@@ -18,7 +18,7 @@ public class PatrolState : MonoBehaviour
         agent = GetComponent<NavMeshAgent>(); // Get the NavMeshAgent component
 
         // Start patrolling from the first waypoint
-        MoveToNextWaypoint();
+        MoveToWaypoint(currentWaypointIndex);
     }
 
     private void Update()
@@ -31,19 +31,29 @@ public class PatrolState : MonoBehaviour
             Invoke(nameof(ContinuePatrol), waitDuration); // Wait for the specified duration before continuing patrol
         }
     }
+private void MoveToWaypoint(int index)
+    {
+        // Set the destination to the position of the current waypoint
+        agent.SetDestination(waypoints[index].position);
+    }
 
     private void ContinuePatrol()
     {
-        isWaiting = false;
+        isWaiting = false; // End the waiting period
+
+        // Move to the next waypoint
         currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
-        MoveToNextWaypoint();
+        MoveToWaypoint(currentWaypointIndex);
+
+        // Reverse patrol path if the last waypoint is reached
         if (currentWaypointIndex == 0)
         {
-            System.Array.Reverse(waypoints);
+            CalculateProbabilities();
+            RouletteMoveToNextWaypoint();
         }
     }
 
-    private void MoveToNextWaypoint()
+    private void RouletteMoveToNextWaypoint()
     {
         List <float> probabilities = CalculateProbabilities();
         int selectedIndex = RouletteWheelSelection(probabilities);
@@ -88,4 +98,6 @@ public class PatrolState : MonoBehaviour
         Debug.LogError("No se pudo seleccionar un waypoint.");
         return -1;
     }
+
+    
 }
