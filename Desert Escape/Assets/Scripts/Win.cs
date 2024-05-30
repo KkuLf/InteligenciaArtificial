@@ -3,12 +3,12 @@ using UnityEngine.SceneManagement;
 
 public class Win : MonoBehaviour
 {
-    private PlayerController playerController; // Reference to the PlayerController script
+    private PlayerController1 playerController; // Reference to the PlayerController script
 
     private void Start()
     {
         // Find and store the PlayerController component
-        playerController = FindObjectOfType<PlayerController>();
+        playerController = FindObjectOfType<PlayerController1>();
     }
 
     private void OnTriggerEnter(Collider other)

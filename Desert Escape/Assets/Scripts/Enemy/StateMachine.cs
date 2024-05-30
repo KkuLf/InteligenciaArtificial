@@ -50,7 +50,7 @@ public class StateMachine : MonoBehaviour
                 Vector3 pursueDir = new Pursuit(transform, player.GetComponent<Rigidbody>(), 1f).GetDir();
 
                 // Apply the direction to the enemy's movement
-                Debug.Log("Pursuit Direction: " + pursueDir);
+                //Debug.Log("Pursuit Direction: " + pursueDir);
 
                 // We use a NavMeshAgent to move the enemy towards the player in the direction of pursueDir
                 GetComponent<NavMeshAgent>().destination = transform.position + pursueDir * speed;

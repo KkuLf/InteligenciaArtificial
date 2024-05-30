@@ -1,74 +1,38 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 2f; // Movement speed
-    public float runSpeedMultiplier = 1.2f; // Speed multiplier when running
-    public float crouchHeight = 0.5f; // Height when crouching
+    IPlayerModel _player;
+    IPlayerView _view;
 
-    public Animator animator; // Reference to the Animator component
-
-    private CharacterController characterController;
-    private Transform cameraTransform;
-    private bool isCrouching = false;
-
-    private void Start()
+    FSM<StatesEnum> _fsm;
+    private void Awake()
     {
-        characterController = GetComponent<CharacterController>();
-        cameraTransform = Camera.main.transform; // Assuming the main camera is the player's camera
-
-        // Ensure cursor is locked and invisible
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        _player = GetComponent<IPlayerModel>();
+        _view = GetComponent<IPlayerView>();
+        InitializeFSM();
     }
 
-    private void Update()
+    void InitializeFSM()
     {
-        // Check if any movement keys are pressed
-        bool isMoving = (Input.GetAxis("Horizontal") != 0f || Input.GetAxis("Vertical") != 0f);
-        animator.SetBool("IsMoving", isMoving); // Set animator bool for moving
+        _fsm = new FSM<StatesEnum>();
 
-        // Running
-        float currentMoveSpeed = moveSpeed;
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            currentMoveSpeed *= runSpeedMultiplier;
-            animator.SetBool("IsRunning", true); // Set running animation
-        }
-        else
-        {
-            animator.SetBool("IsRunning", false); // Set not running animation
-        }
+        var idle = new PlayerStateIdle<StatesEnum>(StatesEnum.Walk);
+        var walk = new PlayerStateWalk<StatesEnum>(_player, _view, StatesEnum.Idle);
 
-        // Crouching
-        if (Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.LeftControl))
-        {
-            isCrouching = !isCrouching;
-            characterController.height = isCrouching ? crouchHeight : 2f; // Adjust character controller height
-            animator.SetBool("IsCrouching", isCrouching); // Set crouching animation
-        }
+        idle.AddTransition(StatesEnum.Walk, walk);
+        walk.AddTransition(StatesEnum.Idle, idle);
 
-        // Camera Control
-        float mouseX = Input.GetAxis("Mouse X");
-        float mouseY = Input.GetAxis("Mouse Y");
-
-        transform.Rotate(Vector3.up * mouseX); // Rotate player horizontally
-        cameraTransform.Rotate(Vector3.left * mouseY); // Rotate camera vertically
-
-        // Apply movement
-        Vector3 moveDirection = transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal");
-        characterController.Move(moveDirection.normalized * currentMoveSpeed * Time.deltaTime);
-
-        // Set walking animation
-        animator.SetFloat("Speed", moveDirection.magnitude);
+        _fsm.SetInit(idle);
     }
-
-    // Call this method when changing to "win" or "GameOver" scene
-    public void ActivateCursor()
+    void Update()
     {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        _fsm.OnUpdate();
+    }
+    public void ChangeModel(IPlayerModel model)
+    {
+        _player = model;
     }
 }
-
