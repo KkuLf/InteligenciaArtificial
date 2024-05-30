@@ -2,21 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MagikarpStateSteering<T> : State<T>
+public class DroneStateSteering<T> : State<T>
 {
     ISteering _steering;
-    Magikarp _magikarp;
+    Drone _drone;
     ObstacleAvoidanceV2 _obs;
-    public MagikarpStateSteering(Magikarp magikarp, ISteering steering, ObstacleAvoidanceV2 obs)
+    public DroneStateSteering(Drone drone, ISteering steering, ObstacleAvoidanceV2 obs)
     {
         _steering = steering;
-        _magikarp = magikarp;
+        _drone = drone;
         _obs = obs;
     }
     public override void Execute()
     {
         var dir = _obs.GetDir(_steering.GetDir(), false);
-        _magikarp.Move(dir);
-        _magikarp.LookDir(dir);
+        _drone.Move(dir);
+        _drone.LookDir(dir);
     }
 }
