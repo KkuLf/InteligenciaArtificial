@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: 5852472103175156087}
   - component: {fileID: 1054863471941913693}
   m_Layer: 6
-  m_Name: Drone
+  m_Name: Drone 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2aafe0006d60b542a3208a8e0a0c8f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 3814967280478556949, guid: cc3b6ba7109882f41b331dfdd12dd471, type: 3}
+  target: {fileID: 1959021213921398918, guid: 856083778f6777c48bcd6b6bf65f5286, type: 3}
   timePrediction: 1
   angle: 215
   radius: 1.8
@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   multiplier: 4
-  target: {fileID: 3268449441608806554, guid: cc3b6ba7109882f41b331dfdd12dd471, type: 3}
+  target: {fileID: 6548660822058168512, guid: 856083778f6777c48bcd6b6bf65f5286, type: 3}
   isActive: 1
 --- !u!114 &1054863471941913693
 MonoBehaviour:
