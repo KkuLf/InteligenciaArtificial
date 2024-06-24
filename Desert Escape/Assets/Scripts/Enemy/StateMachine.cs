@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
+using System.Linq;
 
 public class StateMachine : MonoBehaviour
 {
     private DecisionTree decisionTree;
     private float speed = 1.5f;
+    private float alertSpeed = 1.5f;
 
     public enum EnemyState
     {
@@ -20,6 +23,7 @@ public class StateMachine : MonoBehaviour
 
     private void Start()
     {
+        decisionTree = GetComponent<DecisionTree>();
         SetState(EnemyState.Patrol);
         player = GameObject.FindGameObjectWithTag("Player").transform; // Find the player
     }
@@ -53,10 +57,9 @@ public class StateMachine : MonoBehaviour
                 //Debug.Log("Pursuit Direction: " + pursueDir);
 
                 // We use a NavMeshAgent to move the enemy towards the player in the direction of pursueDir
+                GetComponent<NavMeshAgent>().speed = alertSpeed;
                 GetComponent<NavMeshAgent>().destination = transform.position + pursueDir * speed;
                 break;
-
-
         }
     }
 
@@ -77,5 +80,10 @@ public class StateMachine : MonoBehaviour
                 GetComponent<ShootState>().enabled = true;
                 break;
         }
+    }
+
+    public void SetAlertSpeed(float speed)
+    {
+        alertSpeed = speed;
     }
 }

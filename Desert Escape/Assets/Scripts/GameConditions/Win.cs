@@ -35,7 +35,7 @@ public class Win : MonoBehaviour
     public void GoToMapScene()
     {
         // Load the map scene by index
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("Map");
     }
 
     // Function to exit the game

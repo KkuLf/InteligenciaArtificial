@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DecisionTree : MonoBehaviour
@@ -18,8 +19,14 @@ public class DecisionTree : MonoBehaviour
         if (IsPlayerInSight())      // We check if the player is spotted
         {
             Debug.Log("Player in sight!");
-            stateMachine.SetState(StateMachine.EnemyState.Shoot); 
+            stateMachine.SetState(StateMachine.EnemyState.Shoot);
             // DT processes it and calls the State machine to transition to to Shoot state and execute it
+
+            List<float> alertSpeeds = new List<float> { 1.0f, 1.5f, 2.0f, 2.5f };
+            List<float> probabilities = new List<float> { 0.1f, 0.2f, 0.4f, 0.3f }; // Adjust these probabilities as needed
+            float selectedSpeed = RouletteWheelSelection(alertSpeeds, probabilities);
+
+            stateMachine.SetAlertSpeed(selectedSpeed);
         }
     }
 
@@ -51,5 +58,24 @@ public class DecisionTree : MonoBehaviour
         Gizmos.DrawRay(transform.position, Quaternion.Euler(0, coneAngle / 2, 0) * transform.forward * sightRange);
         Gizmos.DrawRay(transform.position, Quaternion.Euler(0, -coneAngle / 2, 0) * transform.forward * sightRange);
         Gizmos.DrawLine(transform.position, transform.position + transform.forward * sightRange);
+    }
+
+    private float RouletteWheelSelection(List<float> values, List<float> probabilities)
+    {
+        float randomValue = Random.value;
+        float cumulativeProbability = 0;
+
+        for (int i = 0; i < probabilities.Count; i++)
+        {
+            cumulativeProbability += probabilities[i];
+            if (randomValue <= cumulativeProbability)
+            {
+                return values[i];
+            }
+        }
+
+        // Fallback in case no value is selected (shouldn't happen)
+        Debug.LogError("No value selected in RouletteWheelSelection.");
+        return values[0];
     }
 }
