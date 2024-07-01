@@ -57,6 +57,7 @@ private void MoveToWaypoint(int index)
         int selectedIndex = RouletteWheelSelection(probabilities);
         agent.SetDestination(waypoints[selectedIndex].position);
     }
+
     private List<float> CalculateProbabilities()
     {
         List<float> distances = new List<float>();

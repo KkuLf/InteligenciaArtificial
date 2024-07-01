@@ -30,7 +30,7 @@ public class DecisionTree : MonoBehaviour
         }
     }
 
-    public bool IsPlayerInSight()       // LOS checking 
+    public bool IsPlayerInSight()       // LOS checking
     {
         Vector3 directionToPlayer = player.position - transform.position;
 

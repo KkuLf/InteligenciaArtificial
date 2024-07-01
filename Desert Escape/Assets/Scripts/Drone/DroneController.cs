@@ -103,6 +103,7 @@ public class DroneController : MonoBehaviour
             }
         }
     }
+
     void PlayerDetected()
     {
         // Load the "GameOver" scene
