@@ -63,6 +63,7 @@ public class DroneController : MonoBehaviour
         _fsm.OnUpdate();
         DetectPlayer();
     }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.blue;

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Win
+  - Box
   layers:
   - Default
   - TransparentFX
@@ -13,8 +14,8 @@ TagManager:
   - MinimapSprites
   - Water
   - UI
-  - 
-  - 
+  - Obstacle
+  - Node
   - 
   - 
   - 

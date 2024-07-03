@@ -7,6 +7,7 @@ public enum StatesEnum
     Default,
     Idle,
     Walk,
+    Patrol,
     Attack,
     Chase,
     Dead
