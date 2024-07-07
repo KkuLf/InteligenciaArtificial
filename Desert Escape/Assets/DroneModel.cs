@@ -5,6 +5,7 @@ using UnityEngine;
 public class DroneModel : MonoBehaviour, IBoid
 {
     [SerializeField] private float speed;
+    [SerializeField] private float speedRot;
     Rigidbody _rb;
 
     public Vector3 Position => transform.position;
@@ -25,6 +26,7 @@ public class DroneModel : MonoBehaviour, IBoid
     public void LookDir(Vector3 dir)
     {
         if (dir.x == 0 && dir.z == 0) return;
-        transform.forward = dir;
+        transform.forward = Vector3.Lerp(transform.forward, dir, Time.deltaTime * speedRot);
+
     }
 }

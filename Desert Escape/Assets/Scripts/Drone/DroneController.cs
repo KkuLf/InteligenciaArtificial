@@ -43,7 +43,7 @@ public class DroneController : MonoBehaviour
 
     void InitializeFSM()
     {
-        var idle = new EnemyIdleState<StatesEnum>();
+        var idle = new DroneIdleState<StatesEnum>(_model);
         var follow = new DroneFollowState<StatesEnum>(_model, _steering, _obstacleAvoidance);
         
         idle.AddTransition(StatesEnum.Follow, follow);
