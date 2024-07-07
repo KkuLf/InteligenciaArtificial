@@ -5,7 +5,7 @@ using UnityEngine;
 public class LeaderBehaviour : MonoBehaviour, IFlockingBehaviour
 {
     public float multiplier;
-    public Transform target;
+    public Transform target; 
     public bool isActive = true;
 
     public Vector3 GetDir(List<IBoid> boids, IBoid self)

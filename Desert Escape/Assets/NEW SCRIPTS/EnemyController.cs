@@ -51,7 +51,7 @@ public class EnemyController : MonoBehaviour
     void InitializeFSM()
     {
         var idle = new EnemyIdleState<StatesEnum>();
-        var chase = new EnemyChaseState<StatesEnum>(_model, target.transform, _pursuit, _obstacleAvoidance);
+        var chase = new EnemyChaseState<StatesEnum>(_model, _pursuit, _obstacleAvoidance);
         var attack = new EnemyAttackState<StatesEnum>(_model);
         _stateFollowPoints = new EnemyPatrolState<StatesEnum>(_model);
 

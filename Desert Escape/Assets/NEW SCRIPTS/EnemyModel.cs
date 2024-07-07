@@ -41,7 +41,7 @@ public class EnemyModel : MonoBehaviour
     {
         StartCoroutine(Cooldown());
     }
-
+   
     IEnumerator Cooldown()
     {
         // Add bullet logic

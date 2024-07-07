@@ -1,117 +1,93 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class DroneController : MonoBehaviour
 {
+    FSM<StatesEnum> _fsm;
+    ITreeNode _root;
+    [SerializeField] DroneModel _model;
+    //[SerializeField] GameObject target;
+    private Rigidbody _targetRigidbody;
 
-    private PlayerController1 playerController; // Reference to the PlayerController script
+    [SerializeField] float closeToLeader;
 
-    public Rigidbody target;
+    public LeaderBehaviour leaderBehaviour;
+
+    ISteering _steering;
+    ObstacleAvoidanceV2 _obstacleAvoidance;
+
+    ILineOfSight _los;
+
+    #region Steering
     public float timePrediction;
     public float angle;
     public float radius;
+    public float personalArea;
     public LayerMask maskObs;
-    FSM<StatesEnum> _fsm;
-    ISteering _steering;
-    Drone _drone;
-    ObstacleAvoidanceV2 _obstacleAvoidance;
-
-    public float detectionRadius = 10f; // Radius of the cone
-    public float detectionAngle = 45f;  // Angle of the cone
-    public LayerMask detectionLayer;    // LayerMask to filter the raycasting to specific layers (e.g., Player layer)
+    #endregion
 
     private void Awake()
     {
-        _drone = GetComponent<Drone>();
+        _model = GetComponent<DroneModel>();
+        _los = GetComponent<ILineOfSight>();
+
+    }
+    void Start()
+    {
         InitializeSteerings();
+        InitializedTree();
         InitializeFSM();
-    }
-
-    private void Start()
-    {
-        // Find and store the PlayerController component
-        playerController = FindObjectOfType<PlayerController1>();
-    }
-
-    void InitializeSteerings()
-    {
-        //var seek = new Seek(_drone.transform, target.transform);
-        //var flee = new Flee(_drone.transform, target.transform);
-        //var pursuit = new Pursuit(_drone.transform, target, timePrediction);
-        //var evade = new Evade(_drone.transform, target, timePrediction);
-        _steering = GetComponent<FlockingManager>();
-        _obstacleAvoidance = new ObstacleAvoidanceV2(_drone.transform, angle, radius, maskObs);
     }
 
     void InitializeFSM()
     {
-        _fsm = new FSM<StatesEnum>();
+        var idle = new EnemyIdleState<StatesEnum>();
+        var follow = new DroneFollowState<StatesEnum>(_model, _steering, _obstacleAvoidance);
+        
+        idle.AddTransition(StatesEnum.Follow, follow);
+        follow.AddTransition(StatesEnum.Idle, idle);
 
-        var idle = new DroneStateIdle<StatesEnum>();
-        var steering = new DroneStateSteering<StatesEnum>(_drone, _steering, _obstacleAvoidance);
-
-        idle.AddTransition(StatesEnum.Walk, steering);
-        steering.AddTransition(StatesEnum.Idle, idle);
-
-        _fsm.SetInit(steering);
+        _fsm = new FSM<StatesEnum>(idle);
     }
+
+
+
+    void InitializeSteerings()
+    {
+        _steering = GetComponent<FlockingManager>();
+
+        _obstacleAvoidance = new ObstacleAvoidanceV2(_model.transform, angle, radius, maskObs, personalArea);
+    }
+
+    void InitializedTree()
+    {
+        // Actions
+        var idle = new ActionNode(() => _fsm.Transition(StatesEnum.Idle));
+        var follow = new ActionNode(() => _fsm.Transition(StatesEnum.Follow));
+
+        // Questions
+        QuestionNode distanceToLead = new QuestionNode(QuestionTooClose, idle, follow);
+
+        _root = distanceToLead;
+    }
+
+    bool QuestionTooClose()
+    {
+        return Vector3.Distance(transform.position, leaderBehaviour.target.position) < closeToLeader;
+    }
+
+    bool QuestionPatrol()
+    {
+        return true;
+    }
+
+
     void Update()
     {
         _fsm.OnUpdate();
-        DetectPlayer();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, radius);
-        Gizmos.DrawRay(transform.position, Quaternion.Euler(0, angle / 2, 0) * transform.forward * radius);
-        Gizmos.DrawRay(transform.position, Quaternion.Euler(0, -angle / 2, 0) * transform.forward * radius);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius);
-
-        Vector3 forward = transform.forward;
-        Vector3 down = Vector3.down;
-
-        for (float angle = -detectionAngle; angle <= detectionAngle; angle += 5f)
-        {
-            Quaternion rotation = Quaternion.AngleAxis(angle, transform.right);
-            Vector3 direction = rotation * down;
-            Gizmos.DrawRay(transform.position, direction * detectionRadius);
-        }
-    }
-
-    void DetectPlayer()
-    {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, detectionLayer);
-
-        foreach (Collider hitCollider in hitColliders)
-        {
-            Vector3 directionToTarget = hitCollider.transform.position - transform.position;
-            float angleToTarget = Vector3.Angle(Vector3.down, directionToTarget);
-
-            if (angleToTarget < detectionAngle)
-            {
-                if (hitCollider.CompareTag("Player"))
-                {
-                    // Player detected within the cone
-                    PlayerDetected();
-                }
-            }
-        }
-    }
-
-    void PlayerDetected()
-    {
-        // Load the "GameOver" scene
-        SceneManager.LoadScene("GameOver");
-
-        // Activate cursor using PlayerController
-        playerController.ActivateCursor();
+        _root.Execute();
     }
 
 }

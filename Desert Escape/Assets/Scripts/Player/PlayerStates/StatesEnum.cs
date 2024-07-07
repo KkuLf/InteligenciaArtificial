@@ -10,5 +10,6 @@ public enum StatesEnum
     Patrol,
     Attack,
     Chase,
+    Follow,
     Dead
 }
