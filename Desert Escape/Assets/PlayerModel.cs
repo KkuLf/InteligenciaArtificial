@@ -16,6 +16,7 @@ public class PlayerModel : MonoBehaviour
     void Start()
     {
         _rb = GetComponent<Rigidbody>();
+        Cursor.visible = false;
     }
 
     public void Move(float horizontalInput, float verticalInput)

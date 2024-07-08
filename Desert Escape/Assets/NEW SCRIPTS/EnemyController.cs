@@ -172,13 +172,14 @@ public class EnemyController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            Cursor.visible = true;
             SceneManager.LoadScene("GameOver");
         }
     }
 
     IEnumerator ChaseTime()
     {
-        // Seguir al jugador segundos despues de dejar de verlo
+        // Follow the player for a while after spotting him
         Debug.Log("Following");
         yield return new WaitForSeconds(_totalChaseTime);
         Debug.Log("Back to patrol");
