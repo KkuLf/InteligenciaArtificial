@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class EnemyPatrolState<T> : State<T>, IPoints
 {
@@ -12,19 +10,23 @@ public class EnemyPatrolState<T> : State<T>, IPoints
     List<Vector3> _waypoints;
     int _nextPoint = 0;
     bool _isFinishPath = true;
+
     public EnemyPatrolState(EnemyModel model)
     {
         _model = model;
     }
+
     public override void Execute()
     {
         base.Execute();
         Run();
     }
+
     public override void Sleep()
     {
         base.Sleep();
     }
+
     public void SetWayPoints(List<Node> newPoints)
     {
         var list = new List<Vector3>();
@@ -34,6 +36,7 @@ public class EnemyPatrolState<T> : State<T>, IPoints
         }
         SetWayPoints(list);
     }
+
     public void SetWayPoints(List<Vector3> newPoints)
     {
         _nextPoint = 0;
@@ -45,6 +48,7 @@ public class EnemyPatrolState<T> : State<T>, IPoints
         _model.SetPosition(pos);
         _isFinishPath = false;
     }
+
     void Run()
     {
         if (IsFinishPath) return;
@@ -54,9 +58,9 @@ public class EnemyPatrolState<T> : State<T>, IPoints
         Vector3 dir = posPoint - _model.transform.position;
         if (dir.magnitude < 0.2f)
         {
-            if (_nextPoint + 1 < _waypoints.Count)
-                _nextPoint++;
-            else
+            _nextPoint = SelectNextWaypoint();
+
+            if (_nextPoint == -1)
             {
                 _isFinishPath = true;
                 return;
@@ -65,5 +69,49 @@ public class EnemyPatrolState<T> : State<T>, IPoints
         _model.Move(dir.normalized);
         _model.LookDir(dir);
     }
+
     public bool IsFinishPath => _isFinishPath;
+
+    private int SelectNextWaypoint()
+    {
+        List<float> probabilities = CalculateProbabilities();
+        return RouletteWheelSelection(probabilities);
+    }
+
+    private List<float> CalculateProbabilities()
+    {
+        List<float> distances = new List<float>();
+        foreach (Vector3 waypoint in _waypoints)
+        {
+            float distance = Vector3.Distance(_model.transform.position, waypoint);
+            distances.Add(distance);
+        }
+        List<float> probabilities = new List<float>();
+        float totalDistance = distances.Sum();
+
+        foreach (float distance in distances)
+        {
+            float probability = 1f - (distance / totalDistance);
+            probabilities.Add(probability);
+        }
+
+        return probabilities;
+    }
+
+    private int RouletteWheelSelection(List<float> probabilities)
+    {
+        float randomValue = UnityEngine.Random.value;
+        float cumulativeProbability = 0;
+
+        for (int i = 0; i < probabilities.Count; i++)
+        {
+            cumulativeProbability += probabilities[i];
+            if (randomValue <= cumulativeProbability)
+            {
+                return i;
+            }
+        }
+        Debug.LogError("No se pudo seleccionar un waypoint.");
+        return -1;
+    }
 }
