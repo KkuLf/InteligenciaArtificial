@@ -365,8 +365,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9597401fb41f58a4cb013b5234f2c4b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 10
-  angle: 360
+  range: 5
+  angle: 120
   maskObs:
     serializedVersion: 2
     m_Bits: 64

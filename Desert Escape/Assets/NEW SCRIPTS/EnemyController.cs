@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static UnityEngine.GraphicsBuffer;
 
 public class EnemyController : MonoBehaviour
@@ -145,6 +146,13 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            SceneManager.LoadScene("GameOver");
+        }
+    }
 
     public IPoints GetStateWaypoints => _stateFollowPoints;
 }

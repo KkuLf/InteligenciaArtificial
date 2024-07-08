@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EnemyChaseState<T> : State<T>
 {
@@ -20,4 +21,5 @@ public class EnemyChaseState<T> : State<T>
         _model.Move(_model.transform.forward);
         _model.LookDir(dir);
     }
+
 }
