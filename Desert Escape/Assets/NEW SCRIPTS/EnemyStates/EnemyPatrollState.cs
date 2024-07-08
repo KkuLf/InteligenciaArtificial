@@ -58,9 +58,11 @@ public class EnemyPatrolState<T> : State<T>, IPoints
         Vector3 dir = posPoint - _model.transform.position;
         if (dir.magnitude < 0.2f)
         {
-            _nextPoint = SelectNextWaypoint();
-
-            if (_nextPoint == -1)
+            if (_nextPoint + 1 < _waypoints.Count)
+            {
+                _nextPoint++;
+            }
+            else
             {
                 _isFinishPath = true;
                 return;

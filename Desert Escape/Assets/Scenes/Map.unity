@@ -2316,7 +2316,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   neighbours:
   - {fileID: 1172971187}
-  - {fileID: 0}
+  - {fileID: 210903208}
 --- !u!65 &272201011
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6411,7 +6411,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff00ff67ef69fe1458dc10ca63f40910, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerController: {fileID: 0}
 --- !u!1 &657863490
 GameObject:
   m_ObjectHideFlags: 0
