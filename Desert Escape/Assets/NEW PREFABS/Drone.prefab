@@ -3039,7 +3039,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac302cd216eecd749aacc9be54709787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  multiplier: 6
+  multiplier: 3
 --- !u!114 &2349110615516231091
 MonoBehaviour:
   m_ObjectHideFlags: 0
