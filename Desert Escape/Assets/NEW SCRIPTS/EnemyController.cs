@@ -13,6 +13,10 @@ public class EnemyController : MonoBehaviour
     [SerializeField] AgentController _agentController;
     private Rigidbody _targetRigidbody;
 
+    Coroutine coroutine;
+    [SerializeField] float _totalChaseTime;
+    public bool seen;
+
     ISteering _pursuit;
     ObstacleAvoidanceV2 _obstacleAvoidance;
 
@@ -56,12 +60,12 @@ public class EnemyController : MonoBehaviour
         var attack = new EnemyAttackState<StatesEnum>(_model);
         _stateFollowPoints = new EnemyPatrolState<StatesEnum>(_model);
 
-        idle.AddTransition(StatesEnum.Chase, chase);    // Transition from idle to chase
+        idle.AddTransition(StatesEnum.Chase, chase);
         idle.AddTransition(StatesEnum.Patrol, _stateFollowPoints);
         idle.AddTransition(StatesEnum.Attack, attack);
 
-        chase.AddTransition(StatesEnum.Idle, idle);                     // Transition from chase to idle
-        chase.AddTransition(StatesEnum.Patrol, _stateFollowPoints);     // Transition from 
+        chase.AddTransition(StatesEnum.Idle, idle);                     
+        chase.AddTransition(StatesEnum.Patrol, _stateFollowPoints);     
         chase.AddTransition(StatesEnum.Attack, attack);
 
         attack.AddTransition(StatesEnum.Idle, idle);
@@ -102,11 +106,29 @@ public class EnemyController : MonoBehaviour
 
     bool QuestionLoS()
     {
-        return _los.CheckRange(target.transform)
-                && _los.CheckAngle(target.transform)
-                && _los.CheckView(target.transform);
+        // We verify if the enemy can see us
+        var currLoS = _los.CheckRange(target.transform)
+                    && _los.CheckAngle(target.transform)
+                    && _los.CheckView(target.transform);
 
+        // Coroutine to make the enemy keep chasing for X time before going back to patrol
+        if (currLoS == false && seen == true)
+        {
+            if (coroutine == null)
+            {
+                coroutine = StartCoroutine(ChaseTime());
+            }
+            return true;
+        }
+        if (coroutine != null)
+        {
+            StopCoroutine(ChaseTime());
+            coroutine = null;
+        }
+        seen = currLoS;
+        return seen;
     }
+
 
     bool QuestionPatrol()
     {
@@ -153,6 +175,16 @@ public class EnemyController : MonoBehaviour
             SceneManager.LoadScene("GameOver");
         }
     }
+
+    IEnumerator ChaseTime()
+    {
+        // Seguir al jugador segundos despues de dejar de verlo
+        Debug.Log("Following");
+        yield return new WaitForSeconds(_totalChaseTime);
+        Debug.Log("Back to patrol");
+        seen = false;
+    }
+
 
     public IPoints GetStateWaypoints => _stateFollowPoints;
 }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3876073856327153062}
   - component: {fileID: 7343796307299553398}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: EnemyAgent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,7 +82,7 @@ Transform:
   m_GameObject: {fileID: 4272372198337668706}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23344536, y: -0, z: -0, w: 0.97236997}
-  m_LocalPosition: {x: -0.095703974, y: 0.206264, z: -0.5583701}
+  m_LocalPosition: {x: -0.095703974, y: 0.206264, z: 0.586}
   m_LocalScale: {x: 0.8761648, y: 0.5335633, z: 0.84881157}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -325,6 +325,8 @@ MonoBehaviour:
   _model: {fileID: 7891238617523189728}
   target: {fileID: 0}
   _agentController: {fileID: 7343796307299553398}
+  _totalChaseTime: 5
+  seen: 0
   timePrediction: 1
   angle: 210
   radius: 0.5

@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.GraphicsBuffer;
 
 public class DroneController : MonoBehaviour
 {
@@ -11,7 +13,10 @@ public class DroneController : MonoBehaviour
     //[SerializeField] GameObject target;
     private Rigidbody _targetRigidbody;
 
+    [SerializeField] bool isDrone;
     [SerializeField] float closeToLeader;
+    [SerializeField] GameObject target;
+
 
     public LeaderBehaviour leaderBehaviour;
 
@@ -66,11 +71,30 @@ public class DroneController : MonoBehaviour
         // Actions
         var idle = new ActionNode(() => _fsm.Transition(StatesEnum.Idle));
         var follow = new ActionNode(() => _fsm.Transition(StatesEnum.Follow));
+        var attack = new ActionNode(() => EndGame());
+
 
         // Questions
         QuestionNode distanceToLead = new QuestionNode(QuestionTooClose, idle, follow);
 
+        var qLoS = new QuestionNode(QuestionLoS, attack, follow);
+
         _root = distanceToLead;
+    }
+
+    bool QuestionLoS()
+    {
+        var seen = _los.CheckRange(target.transform)
+                && _los.CheckAngle(target.transform)
+                && _los.CheckView(target.transform);
+
+        if (seen == true && isDrone)
+        {
+            EndGame();
+            return seen;
+        }
+        return seen;
+
     }
 
     bool QuestionTooClose()
@@ -90,4 +114,9 @@ public class DroneController : MonoBehaviour
         _root.Execute();
     }
 
+    private void EndGame()
+    {
+        Debug.Log("PLAYER SPOTTED BY DRONE!");
+        SceneManager.LoadScene("GameOver");
+    }
 }

@@ -2906,7 +2906,6 @@ GameObject:
   - component: {fileID: 6791733982537611538}
   - component: {fileID: 3855079698021636242}
   - component: {fileID: 4269732038601215545}
-  - component: {fileID: 877951160635514930}
   - component: {fileID: 7004325097622014281}
   - component: {fileID: 2529211220427978645}
   - component: {fileID: 2349110615516231091}
@@ -3000,7 +2999,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _model: {fileID: 861866666354379444}
+  isDrone: 0
   closeToLeader: 3
+  target: {fileID: 0}
   leaderBehaviour: {fileID: 3157008341725710011}
   timePrediction: 1
   angle: 215
@@ -3009,20 +3010,6 @@ MonoBehaviour:
   maskObs:
     serializedVersion: 2
     m_Bits: 64
---- !u!114 &877951160635514930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9038751359282177943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 972281e9cc6302a4883aecdaad2308e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 1
-  speedRot: 2
 --- !u!114 &7004325097622014281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3066,7 +3053,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   multiplier: 5
-  personalArea: 0.7
+  personalArea: 0.75
 --- !u!114 &8108183887005755859
 MonoBehaviour:
   m_ObjectHideFlags: 0
