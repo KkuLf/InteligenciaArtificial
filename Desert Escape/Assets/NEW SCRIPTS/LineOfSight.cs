@@ -9,6 +9,9 @@ public class LineOfSight : MonoBehaviour, ILineOfSight
     public float angle;
     public LayerMask maskObs;
 
+    public float Range => range;
+    public float Angle => angle;
+
     public bool CheckRange(Transform target)
     {
         return CheckRange(target, range);

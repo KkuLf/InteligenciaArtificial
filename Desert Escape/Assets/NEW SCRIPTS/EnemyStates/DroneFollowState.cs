@@ -16,7 +16,6 @@ public class DroneFollowState<T> : State<T>
     }
     public override void Execute()
     {
-        Debug.Log("ENTERED FOLLOW");
         var dir = _obs.GetDir(_steering.GetDir(), false);
         _model.Move(dir);
         _model.LookDir(dir);

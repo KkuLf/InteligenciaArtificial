@@ -21,6 +21,8 @@ public class StateMachine : MonoBehaviour
     private float idleDuration = 6f; // Duration of idle state
     private Transform player; // Reference to the player's transform
 
+    [SerializeField] private float loseSightMultiplier = 1.3f;
+
     private void Start()
     {
         decisionTree = GetComponent<DecisionTree>();
@@ -46,6 +48,13 @@ public class StateMachine : MonoBehaviour
                 }
                 break;
             case EnemyState.Shoot:                          // Shoot state for when the player has been spotted
+
+                // If the player left the (widened) sight cone, give up the chase
+                if (!decisionTree.IsPlayerInSight(loseSightMultiplier, loseSightMultiplier))
+                {
+                    SetState(EnemyState.Patrol);
+                    break;
+                }
 
                 // Disable other state scripts
                 GetComponent<PatrolState>().enabled = false;
@@ -77,7 +86,8 @@ public class StateMachine : MonoBehaviour
             case EnemyState.Shoot:
                 // Deactivate other state scripts and start shooting
                 GetComponent<PatrolState>().enabled = false;
-                GetComponent<ShootState>().enabled = true;
+                var shootState = GetComponent<ShootState>();
+                if (shootState != null) shootState.enabled = true;
                 break;
         }
     }

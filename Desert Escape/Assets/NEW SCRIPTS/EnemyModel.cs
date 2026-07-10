@@ -28,8 +28,11 @@ public class EnemyModel : MonoBehaviour
 
     public void LookDir(Vector3 dir)
     {
+        // Keep the enemy upright: only yaw to face the horizontal direction, don't let
+        // vertical steering (obstacle avoidance, prediction) pitch or roll the body.
+        dir.y = 0;
         if (dir.x == 0 && dir.z == 0) return;
-        transform.forward = dir;
+        transform.forward = dir.normalized;
     }
 
     public void SetPosition(Vector3 pos)

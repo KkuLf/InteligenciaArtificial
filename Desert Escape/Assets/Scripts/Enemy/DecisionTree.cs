@@ -18,7 +18,6 @@ public class DecisionTree : MonoBehaviour
     {
         if (IsPlayerInSight())      // We check if the player is spotted
         {
-            Debug.Log("Player in sight!");
             stateMachine.SetState(StateMachine.EnemyState.Shoot);
             // DT processes it and calls the State machine to transition to to Shoot state and execute it
 
@@ -30,16 +29,23 @@ public class DecisionTree : MonoBehaviour
         }
     }
 
-    public bool IsPlayerInSight()       // LOS checking
+    public bool IsPlayerInSight() => IsPlayerInSight(1f, 1f);
+
+    // rangeMultiplier/angleMultiplier let callers widen the check (e.g. while already
+    // chasing) so jitter right at the edge of sightRange/coneAngle doesn't flip the
+    // result every frame.
+    public bool IsPlayerInSight(float rangeMultiplier, float angleMultiplier)
     {
         Vector3 directionToPlayer = player.position - transform.position;
+        float effectiveRange = sightRange * rangeMultiplier;
+        float effectiveAngle = coneAngle * angleMultiplier;
 
-        if (directionToPlayer.magnitude <= sightRange)
+        if (directionToPlayer.magnitude <= effectiveRange)
         {
-            if (Vector3.Angle(transform.forward, directionToPlayer) <= coneAngle / 2)
+            if (Vector3.Angle(transform.forward, directionToPlayer) <= effectiveAngle / 2)
             {
                 RaycastHit hit;
-                if (Physics.Raycast(transform.position, directionToPlayer, out hit, sightRange))
+                if (Physics.Raycast(transform.position, directionToPlayer, out hit, effectiveRange))
                 {
                     if (hit.collider.CompareTag("Player"))
                     {

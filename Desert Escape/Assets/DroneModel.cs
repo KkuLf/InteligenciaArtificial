@@ -25,8 +25,11 @@ public class DroneModel : MonoBehaviour, IBoid
 
     public void LookDir(Vector3 dir)
     {
+        // Keep the drone level: only yaw to face the horizontal direction, don't let
+        // vertical steering (climbing/avoiding obstacles) pitch or roll the body.
+        dir.y = 0;
         if (dir.x == 0 && dir.z == 0) return;
-        transform.forward = Vector3.Lerp(transform.forward, dir, Time.deltaTime * speedRot);
+        transform.forward = Vector3.Lerp(transform.forward, dir.normalized, Time.deltaTime * speedRot);
 
     }
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public interface ILineOfSight
 {
+    float Range { get; }
+    float Angle { get; }
     bool CheckRange(Transform target);
     bool CheckRange(Transform target, float range);
     bool CheckAngle(Transform target);

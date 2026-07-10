@@ -25,6 +25,9 @@ public class EnemyController : MonoBehaviour
     public LayerMask maskObs;
     #endregion
 
+    [SerializeField] float loseSightMultiplier = 1.3f;
+    IState<StatesEnum> _chaseState;
+
     EnemyPatrolState<StatesEnum> _stateFollowPoints;
 
 
@@ -54,6 +57,7 @@ public class EnemyController : MonoBehaviour
         var chase = new EnemyChaseState<StatesEnum>(_model, _pursuit, _obstacleAvoidance);
         var attack = new EnemyAttackState<StatesEnum>(_model);
         _stateFollowPoints = new EnemyPatrolState<StatesEnum>(_model);
+        _chaseState = chase;
 
         idle.AddTransition(StatesEnum.Chase, chase);    // Transition from idle to chase
         idle.AddTransition(StatesEnum.Patrol, _stateFollowPoints);
@@ -101,8 +105,14 @@ public class EnemyController : MonoBehaviour
 
     bool QuestionLoS()
     {
-        return _los.CheckRange(target.transform)
-                && _los.CheckAngle(target.transform)
+        // Widen the range/angle once already chasing so small jitter near the edge
+        // doesn't flip the result every frame (hysteresis).
+        bool isChasing = _fsm.CurrentState == _chaseState;
+        float rangeMultiplier = isChasing ? loseSightMultiplier : 1f;
+        float angleMultiplier = isChasing ? loseSightMultiplier : 1f;
+
+        return _los.CheckRange(target.transform, _los.Range * rangeMultiplier)
+                && _los.CheckAngle(target.transform, _los.Angle * angleMultiplier)
                 && _los.CheckView(target.transform);
 
     }
@@ -142,6 +152,18 @@ public class EnemyController : MonoBehaviour
         {
             _model.index = _model.currentWaypointIndex;
             IncreaseWaypontIndex();
+        }
+        else if (other.CompareTag("Player"))
+        {
+            GameOver.Trigger();
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            GameOver.Trigger();
         }
     }
 
