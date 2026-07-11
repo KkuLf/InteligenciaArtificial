@@ -82,12 +82,12 @@ public class EnemyController : MonoBehaviour
         _attackState = attack;
         _searchState = search;
 
-        idle.AddTransition(StatesEnum.Chase, chase);    // Transition from idle to chase
+        idle.AddTransition(StatesEnum.Chase, chase);    
         idle.AddTransition(StatesEnum.Patrol, _stateFollowPoints);
         idle.AddTransition(StatesEnum.Attack, attack);
 
-        chase.AddTransition(StatesEnum.Idle, idle);                     // Transition from chase to idle
-        chase.AddTransition(StatesEnum.Patrol, _stateFollowPoints);     // Transition from
+        chase.AddTransition(StatesEnum.Idle, idle);                     
+        chase.AddTransition(StatesEnum.Patrol, _stateFollowPoints);    
         chase.AddTransition(StatesEnum.Attack, attack);
         chase.AddTransition(StatesEnum.Search, search);
 
@@ -125,8 +125,6 @@ public class EnemyController : MonoBehaviour
         var attack = new ActionNode(() => _fsm.Transition(StatesEnum.Attack));
         var search = new ActionNode(() =>
         {
-            // Only (re)transition on the frame it's actually entered, otherwise
-            // re-triggering Enter() every frame would keep resetting its timer.
             if (_fsm.CurrentState != _searchState) _fsm.Transition(StatesEnum.Search);
         });
 
@@ -141,14 +139,10 @@ public class EnemyController : MonoBehaviour
 
     bool QuestionLoS()
     {
-        // Widen the range/angle while already alert (chasing/attacking/searching) so
-        // small jitter near the edge doesn't flip the result every frame (hysteresis).
         bool isAlert = _fsm.CurrentState == _chaseState || _fsm.CurrentState == _attackState || _fsm.CurrentState == _searchState;
         float rangeMultiplier = isAlert ? loseSightMultiplier : 1f;
         float angleMultiplier = isAlert ? loseSightMultiplier : 1f;
 
-        // Write the result to the blackboard so states/other questions can read it
-        // without re-running the sensor checks themselves.
         _blackboard.HasLineOfSight = _blackboard.LineOfSight.CheckRange(_blackboard.Target, _blackboard.LineOfSight.Range * rangeMultiplier)
                 && _blackboard.LineOfSight.CheckAngle(_blackboard.Target, _blackboard.LineOfSight.Angle * angleMultiplier)
                 && _blackboard.LineOfSight.CheckView(_blackboard.Target);
@@ -161,8 +155,6 @@ public class EnemyController : MonoBehaviour
         return Vector3.Distance(transform.position, _blackboard.Target.position) <= attackRange;
     }
 
-    // Only relevant once we've actually been alert (chasing/attacking/searching) - a
-    // fresh Idle/Patrol enemy that never spotted the player has nothing to "give up" on.
     bool QuestionWasAlert()
     {
         return _fsm.CurrentState == _chaseState || _fsm.CurrentState == _attackState || _fsm.CurrentState == _searchState;
@@ -181,8 +173,6 @@ public class EnemyController : MonoBehaviour
         _agentController.RunAStar();
     }
 
-    // Roulette-wheel waypoint pick: closer waypoints get a higher chance, mirroring the
-    // old PatrolState.cs's distance weighting, but reusing the shared MyRandoms.Roulette<T>.
     private int PickWeightedWaypointIndex()
     {
         var distances = new float[_model.waypoints.Length];
@@ -190,7 +180,7 @@ public class EnemyController : MonoBehaviour
 
         for (int i = 0; i < _model.waypoints.Length; i++)
         {
-            if (i == _model.index) continue; // don't immediately re-pick where we came from
+            if (i == _model.index) continue; 
             distances[i] = Vector3.Distance(transform.position, _model.waypoints[i].transform.position);
             totalDistance += distances[i];
         }
