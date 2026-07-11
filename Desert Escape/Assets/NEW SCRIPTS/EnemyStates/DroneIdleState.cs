@@ -14,5 +14,6 @@ public class DroneIdleState<T>: State<T>
     public override void Execute()
     {
         _model.Move(Vector3.zero);
+        _model.LevelOut();
     }
 }

@@ -11,5 +11,6 @@ public enum StatesEnum
     Attack,
     Chase,
     Follow,
-    Dead
+    Dead,
+    Search
 }

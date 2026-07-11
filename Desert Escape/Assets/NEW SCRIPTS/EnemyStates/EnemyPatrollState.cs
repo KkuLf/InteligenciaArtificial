@@ -7,13 +7,15 @@ using UnityEngine;
 public class EnemyPatrolState<T> : State<T>, IPoints
 {
     EnemyModel _model;
+    ObstacleAvoidanceV2 _obs;
     List<Vector3> _waypoints;
     int _nextPoint = 0;
     bool _isFinishPath = true;
 
-    public EnemyPatrolState(EnemyModel model)
+    public EnemyPatrolState(EnemyModel model, ObstacleAvoidanceV2 obs)
     {
         _model = model;
+        _obs = obs;
     }
 
     public override void Execute()
@@ -68,8 +70,9 @@ public class EnemyPatrolState<T> : State<T>, IPoints
                 return;
             }
         }
-        _model.Move(dir.normalized);
-        _model.LookDir(dir);
+        Vector3 avoidDir = _obs != null ? _obs.GetDir(dir.normalized, false) : dir.normalized;
+        _model.Move(avoidDir);
+        _model.LookDir(avoidDir);
     }
 
     public bool IsFinishPath => _isFinishPath;
