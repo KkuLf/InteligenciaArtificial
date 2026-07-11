@@ -4,18 +4,16 @@ using UnityEngine;
 
 public class EnemyAttackState<T> : State<T>
 {
-    EnemyModel _model;
-    Transform _target;
+    EnemyBlackboard _bb;
 
-    public EnemyAttackState(EnemyModel model, Transform target)
+    public EnemyAttackState(EnemyBlackboard blackboard)
     {
-        _model = model;
-        _target = target;
+        _bb = blackboard;
     }
 
     public override void Execute()
     {
         base.Execute();
-        _model.Attack(_target.position);
+        _bb.Model.Attack(_bb.Target.position);
     }
 }

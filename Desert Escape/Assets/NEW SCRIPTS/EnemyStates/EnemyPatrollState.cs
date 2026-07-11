@@ -6,16 +6,14 @@ using UnityEngine;
 
 public class EnemyPatrolState<T> : State<T>, IPoints
 {
-    EnemyModel _model;
-    ObstacleAvoidanceV2 _obs;
+    EnemyBlackboard _bb;
     List<Vector3> _waypoints;
     int _nextPoint = 0;
     bool _isFinishPath = true;
 
-    public EnemyPatrolState(EnemyModel model, ObstacleAvoidanceV2 obs)
+    public EnemyPatrolState(EnemyBlackboard blackboard)
     {
-        _model = model;
-        _obs = obs;
+        _bb = blackboard;
     }
 
     public override void Execute()
@@ -46,8 +44,8 @@ public class EnemyPatrolState<T> : State<T>, IPoints
         //_anim.Play("CIA_Idle");
         _waypoints = newPoints;
         var pos = _waypoints[_nextPoint];
-        pos.y = _model.transform.position.y;
-        _model.SetPosition(pos);
+        pos.y = _bb.Model.transform.position.y;
+        _bb.Model.SetPosition(pos);
         _isFinishPath = false;
     }
 
@@ -56,8 +54,8 @@ public class EnemyPatrolState<T> : State<T>, IPoints
         if (IsFinishPath) return;
         var point = _waypoints[_nextPoint];
         var posPoint = point;
-        posPoint.y = _model.transform.position.y;
-        Vector3 dir = posPoint - _model.transform.position;
+        posPoint.y = _bb.Model.transform.position.y;
+        Vector3 dir = posPoint - _bb.Model.transform.position;
         if (dir.magnitude < 0.2f)
         {
             if (_nextPoint + 1 < _waypoints.Count)
@@ -70,9 +68,9 @@ public class EnemyPatrolState<T> : State<T>, IPoints
                 return;
             }
         }
-        Vector3 avoidDir = _obs != null ? _obs.GetDir(dir.normalized, false) : dir.normalized;
-        _model.Move(avoidDir);
-        _model.LookDir(avoidDir);
+        Vector3 avoidDir = _bb.ObstacleAvoidance != null ? _bb.ObstacleAvoidance.GetDir(dir.normalized, false) : dir.normalized;
+        _bb.Model.Move(avoidDir);
+        _bb.Model.LookDir(avoidDir);
     }
 
     public bool IsFinishPath => _isFinishPath;
@@ -88,7 +86,7 @@ public class EnemyPatrolState<T> : State<T>, IPoints
         List<float> distances = new List<float>();
         foreach (Vector3 waypoint in _waypoints)
         {
-            float distance = Vector3.Distance(_model.transform.position, waypoint);
+            float distance = Vector3.Distance(_bb.Model.transform.position, waypoint);
             distances.Add(distance);
         }
         List<float> probabilities = new List<float>();

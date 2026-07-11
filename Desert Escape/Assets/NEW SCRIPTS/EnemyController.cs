@@ -32,6 +32,7 @@ public class EnemyController : MonoBehaviour
     IState<StatesEnum> _attackState;
     EnemySearchState<StatesEnum> _searchState;
 
+    EnemyBlackboard _blackboard;
     EnemyPatrolState<StatesEnum> _stateFollowPoints;
 
 
@@ -45,6 +46,7 @@ public class EnemyController : MonoBehaviour
     void Start()
     {
         InitializeSteerings();
+        InitializeBlackboard();
         InitializedTree();
         InitializeFSM();
 
@@ -55,13 +57,27 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    // Everything the states and tree questions need to read/write lives in one shared
+    // object instead of each of them getting a hand-picked subset of references.
+    void InitializeBlackboard()
+    {
+        _blackboard = new EnemyBlackboard
+        {
+            Model = _model,
+            Target = target.transform,
+            LineOfSight = _los,
+            Pursuit = _pursuit,
+            ObstacleAvoidance = _obstacleAvoidance
+        };
+    }
+
     void InitializeFSM()
     {
         var idle = new EnemyIdleState<StatesEnum>();
-        var chase = new EnemyChaseState<StatesEnum>(_model, _pursuit, _obstacleAvoidance, target.transform);
-        var attack = new EnemyAttackState<StatesEnum>(_model, target.transform);
-        var search = new EnemySearchState<StatesEnum>(_model, searchDuration);
-        _stateFollowPoints = new EnemyPatrolState<StatesEnum>(_model, _obstacleAvoidance);
+        var chase = new EnemyChaseState<StatesEnum>(_blackboard);
+        var attack = new EnemyAttackState<StatesEnum>(_blackboard);
+        var search = new EnemySearchState<StatesEnum>(_blackboard, searchDuration);
+        _stateFollowPoints = new EnemyPatrolState<StatesEnum>(_blackboard);
         _chaseState = chase;
         _attackState = attack;
         _searchState = search;
@@ -131,15 +147,18 @@ public class EnemyController : MonoBehaviour
         float rangeMultiplier = isAlert ? loseSightMultiplier : 1f;
         float angleMultiplier = isAlert ? loseSightMultiplier : 1f;
 
-        return _los.CheckRange(target.transform, _los.Range * rangeMultiplier)
-                && _los.CheckAngle(target.transform, _los.Angle * angleMultiplier)
-                && _los.CheckView(target.transform);
+        // Write the result to the blackboard so states/other questions can read it
+        // without re-running the sensor checks themselves.
+        _blackboard.HasLineOfSight = _blackboard.LineOfSight.CheckRange(_blackboard.Target, _blackboard.LineOfSight.Range * rangeMultiplier)
+                && _blackboard.LineOfSight.CheckAngle(_blackboard.Target, _blackboard.LineOfSight.Angle * angleMultiplier)
+                && _blackboard.LineOfSight.CheckView(_blackboard.Target);
 
+        return _blackboard.HasLineOfSight;
     }
 
     bool QuestionAttackRange()
     {
-        return Vector3.Distance(transform.position, target.transform.position) <= attackRange;
+        return Vector3.Distance(transform.position, _blackboard.Target.position) <= attackRange;
     }
 
     // Only relevant once we've actually been alert (chasing/attacking/searching) - a

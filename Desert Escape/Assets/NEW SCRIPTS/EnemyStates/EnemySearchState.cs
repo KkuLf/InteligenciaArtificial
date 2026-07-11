@@ -5,13 +5,13 @@ using UnityEngine;
 // player isn't reacquired in time.
 public class EnemySearchState<T> : State<T>
 {
-    readonly EnemyModel _model;
+    readonly EnemyBlackboard _bb;
     readonly float _duration;
     float _timer;
 
-    public EnemySearchState(EnemyModel model, float duration)
+    public EnemySearchState(EnemyBlackboard blackboard, float duration)
     {
-        _model = model;
+        _bb = blackboard;
         _duration = duration;
     }
 
@@ -19,7 +19,7 @@ public class EnemySearchState<T> : State<T>
     {
         base.Enter();
         _timer = 0f;
-        _model.Move(Vector3.zero); // stop dead instead of coasting on whatever velocity Chase left behind
+        _bb.Model.Move(Vector3.zero); // stop dead instead of coasting on whatever velocity Chase left behind
     }
 
     public override void Execute()
